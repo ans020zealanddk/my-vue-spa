@@ -9,6 +9,7 @@
 
 - [x] 2.1 Create an Options API museum map view with selectable collection zones and facility locations; verify each zone and facility can be selected and its location details appear.
 - [x] 2.2 Add a clear prototype-map and signage verification notice; verify the notice is visible in the map view.
+- [x] 2.3 Add a keyboard-accessible SVG floor plan for the museum's main levels with selectable highlighted rooms and turn-by-turn directions; verify level switching, room selection, keyboard activation, and directions.
 
 ## 3. Artwork and Room Wayfinder
 

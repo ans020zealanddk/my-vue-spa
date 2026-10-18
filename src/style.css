@@ -236,6 +236,174 @@ input:focus-visible {
   inset: 30% 24%;
 }
 
+.floor-plan-panel {
+  overflow: hidden;
+  padding: 20px;
+  background: #fbfaf8;
+}
+
+.floor-plan-panel::before,
+.floor-plan-panel::after {
+  display: none;
+}
+
+.floor-tabs {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 21px;
+}
+
+.floor-tab {
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--charcoal);
+  cursor: pointer;
+  font-size: 0.78rem;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.floor-tab:hover,
+.floor-tab.is-selected {
+  border-color: var(--copper);
+}
+
+.floor-tab.is-selected {
+  background: var(--copper);
+  color: #fff;
+}
+
+.floor-map-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.floor-plan {
+  display: block;
+  width: 100%;
+  min-width: 500px;
+  height: auto;
+  margin: 7px auto 0;
+}
+
+.floor-outline {
+  fill: #fff;
+  stroke: var(--charcoal);
+  stroke-width: 2.5;
+}
+
+.floor-corridor {
+  fill: none;
+  stroke: #d9d3ca;
+  stroke-width: 32;
+}
+
+.room-connector {
+  fill: none;
+  stroke: var(--charcoal);
+  stroke-width: 2;
+}
+
+.floor-room {
+  cursor: pointer;
+  outline: none;
+}
+
+.room-shape {
+  fill: var(--sand);
+  stroke: var(--charcoal);
+  stroke-width: 2.5;
+  transition: fill 160ms ease, stroke-width 160ms ease;
+}
+
+.floor-room:hover .room-shape,
+.floor-room:focus-visible .room-shape {
+  stroke: var(--copper);
+  stroke-width: 4;
+}
+
+.floor-room.is-selected .room-shape {
+  fill: var(--copper);
+  stroke: var(--charcoal);
+  stroke-width: 3;
+}
+
+.room-map-label,
+.room-map-caption,
+.entrance-label {
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.room-map-label {
+  fill: var(--charcoal);
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.room-map-caption {
+  fill: var(--muted);
+  font-family: var(--sans);
+  font-size: 11px;
+}
+
+.floor-room.is-selected .room-map-label,
+.floor-room.is-selected .room-map-caption {
+  fill: #fff;
+}
+
+.entrance-label {
+  fill: var(--copper);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.map-legend {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 11px;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.legend-swatch,
+.legend-outline {
+  width: 14px;
+  height: 14px;
+  margin-left: 9px;
+  border: 1px solid var(--charcoal);
+}
+
+.legend-swatch {
+  margin-left: 0;
+  background: var(--copper);
+}
+
+.legend-outline {
+  background: var(--sand);
+}
+
+.room-directions {
+  margin-top: 22px;
+}
+
+.room-directions h3 {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
 .map-label {
   position: relative;
   z-index: 1;
@@ -611,6 +779,11 @@ input:focus-visible {
   .map-panel {
     min-height: 350px;
     padding: 20px;
+  }
+
+  .floor-plan-panel {
+    min-height: 0;
+    padding: 16px;
   }
 
   .utility-inner {

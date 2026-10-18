@@ -17,6 +17,21 @@ The application MUST let visitors select a museum collection zone or key visitor
 - **WHEN** a visitor selects lockers, café, or restrooms
 - **THEN** the application identifies the selected facility and shows its location information
 
+### Requirement: Explore rooms on an interactive floor plan
+The application MUST show selectable rooms on level-based schematic floor plans and highlight the selected room.
+
+#### Scenario: Switch museum level
+- **WHEN** a visitor selects a different museum level
+- **THEN** the application displays that level's room plan and available destinations
+
+#### Scenario: Select a room on the floor plan
+- **WHEN** a visitor activates a room on the SVG plan
+- **THEN** the application highlights the room and displays its destination details and ordered directions
+
+#### Scenario: Use the floor plan with a keyboard
+- **WHEN** a visitor focuses a room and presses Enter or Space
+- **THEN** the application selects that room and displays its directions
+
 ### Requirement: Find artwork and room directions
 The application MUST let visitors search or select featured artworks and rooms and show ordered directions starting from the museum entrance.
 
