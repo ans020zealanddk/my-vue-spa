@@ -61,6 +61,7 @@ input:focus-visible {
 }
 
 .header-topline,
+.header-tools,
 .primary-nav,
 .eyebrow,
 .section-heading,
@@ -75,6 +76,27 @@ input:focus-visible {
   justify-content: space-between;
   gap: 24px;
   padding-bottom: 23px;
+}
+
+.header-tools {
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.language-select {
+  min-height: 38px;
+  padding: 7px 30px 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--sand);
+  color: var(--charcoal);
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.language-select:focus-visible {
+  outline: 3px solid var(--copper);
+  outline-offset: 3px;
 }
 
 .brand-lockup {
@@ -763,6 +785,10 @@ input:focus-visible {
     text-align: right;
   }
 
+  .header-tools {
+    gap: 10px;
+  }
+
   .primary-nav {
     gap: 22px;
   }
@@ -812,7 +838,7 @@ input:focus-visible {
 
 @media (max-width: 480px) {
   .header-note {
-    font-size: 0.57rem;
+    display: none;
   }
 
   .brand-mark {

@@ -1,21 +1,19 @@
 <template>
   <main class="page-content">
     <section aria-labelledby="map-title">
-      <p class="eyebrow">SMK · Copenhagen</p>
-      <h1 id="map-title" class="page-title">Find your way through art.</h1>
-      <p class="page-intro">
-        Choose a collection or visitor essential to see its location and plan your next stop.
-      </p>
+      <p class="eyebrow">{{ t('map.eyebrow') }}</p>
+      <h1 id="map-title" class="page-title">{{ t('map.title') }}</h1>
+      <p class="page-intro">{{ t('map.intro') }}</p>
     </section>
 
     <div class="section-heading">
-      <h2>Explore the museum</h2>
-      <span class="section-kicker">Choose a level, then select a room</span>
+      <h2>{{ t('map.sectionTitle') }}</h2>
+      <span class="section-kicker">{{ t('map.sectionKicker') }}</span>
     </div>
 
-    <section class="map-layout" aria-label="Interactive museum floor plan">
+    <section class="map-layout" :aria-label="t('map.ariaLabel')">
       <div class="map-panel floor-plan-panel">
-        <div class="floor-tabs" role="tablist" aria-label="Museum levels">
+        <div class="floor-tabs" role="tablist" :aria-label="t('map.levelsLabel')">
           <button
             v-for="level in levels"
             :key="level.id"
@@ -28,11 +26,13 @@
             :aria-selected="selectedLevelId === level.id"
             @click="selectLevel(level)"
           >
-            {{ level.name }}
+            {{ t(`map.levels.${level.id}`) }}
           </button>
         </div>
 
-        <p class="map-label">{{ currentLevel.name }} · schematic floor plan</p>
+        <p class="map-label">
+          {{ t(`map.levels.${currentLevel.id}`) }} · {{ t('map.schematicPlan') }}
+        </p>
 
         <div class="floor-map-scroll">
           <svg
@@ -43,10 +43,10 @@
             :aria-labelledby="`floor-tab-${currentLevel.id} floor-plan-title`"
             aria-describedby="floor-plan-description"
           >
-            <title id="floor-plan-title">{{ currentLevel.name }} floor plan</title>
-            <desc id="floor-plan-description">
-              Select a room to highlight it and view suggested directions from the entrance.
-            </desc>
+            <title id="floor-plan-title">
+              {{ t(`map.levels.${currentLevel.id}`) }} {{ t('map.floorPlanSuffix') }}
+            </title>
+            <desc id="floor-plan-description">{{ t('map.floorPlanDescription') }}</desc>
             <path class="floor-outline" d="M22 24H618V330H355V352H285V330H22Z" />
             <path class="floor-corridor" d="M43 163H597M320 163V315" />
             <path
@@ -62,7 +62,7 @@
               :class="{ 'is-selected': selectedPlaceId === room.place.id }"
               role="button"
               tabindex="0"
-              :aria-label="`${room.place.name}, ${room.place.location}. Select for directions.`"
+              :aria-label="t('map.roomSelectLabel', { name: t(`places.${room.place.id}.name`), location: t(`places.${room.place.id}.location`) })"
               :aria-pressed="selectedPlaceId === room.place.id"
               @click="selectPlace(room.place)"
               @keydown="activateRoom($event, room.place)"
@@ -76,35 +76,38 @@
                 rx="2"
               />
               <text class="room-map-label" :x="room.x + room.width / 2" :y="room.y + 42">
-                {{ room.mapLabel }}
+                {{ t(`places.${room.place.id}.mapLabel`) }}
               </text>
               <text class="room-map-caption" :x="room.x + room.width / 2" :y="room.y + 66">
-                {{ room.place.location.split(' · ')[0] }}
+                {{ t(`places.${room.place.id}.location`).split(' · ')[0] }}
               </text>
             </g>
-            <text class="entrance-label" x="320" y="348">MAIN ENTRANCE</text>
+            <text class="entrance-label" x="320" y="348">{{ t('map.mainEntrance') }}</text>
           </svg>
         </div>
 
         <div class="map-legend">
           <span class="legend-swatch" aria-hidden="true"></span>
-          <span>Selected room</span>
+          <span>{{ t('map.selectedRoom') }}</span>
           <span class="legend-outline" aria-hidden="true"></span>
-          <span>Room outline</span>
+          <span>{{ t('map.roomOutline') }}</span>
         </div>
       </div>
 
       <article v-if="selectedPlace" class="detail-card" aria-live="polite">
         <div>
-          <p class="eyebrow">{{ selectedPlace.category }}</p>
-          <h2>{{ selectedPlace.name }}</h2>
-          <p class="muted-copy">{{ selectedPlace.description }}</p>
+          <p class="eyebrow">{{ t(`places.${selectedPlace.id}.category`) }}</p>
+          <h2>{{ t(`places.${selectedPlace.id}.name`) }}</h2>
+          <p class="muted-copy">{{ t(`places.${selectedPlace.id}.description`) }}</p>
         </div>
-        <p class="detail-meta">{{ selectedPlace.location }}</p>
+        <p class="detail-meta">{{ t(`places.${selectedPlace.id}.location`) }}</p>
         <div class="room-directions">
-          <h3>Suggested directions from the entrance</h3>
+          <h3>{{ t('map.directionsTitle') }}</h3>
           <ol class="direction-list">
-            <li v-for="(step, index) in selectedPlace.directions" :key="index">
+            <li
+              v-for="(step, index) in t(`places.${selectedPlace.id}.directions`)"
+              :key="index"
+            >
               {{ step }}
             </li>
           </ol>
@@ -114,8 +117,8 @@
 
     <section aria-labelledby="facilities-title">
       <div class="section-heading">
-        <h2 id="facilities-title">Visitor essentials</h2>
-        <span class="section-kicker">A few useful places to know</span>
+        <h2 id="facilities-title">{{ t('map.facilitiesTitle') }}</h2>
+        <span class="section-kicker">{{ t('map.facilitiesKicker') }}</span>
       </div>
       <div class="facility-grid">
         <button
@@ -128,23 +131,24 @@
           @click="selectPlace(facility)"
         >
           <span class="facility-icon" aria-hidden="true">{{ index + 1 }}</span>
-          <span class="facility-name">{{ facility.name }}</span>
+          <span class="facility-name">{{ t(`places.${facility.id}.name`) }}</span>
         </button>
       </div>
     </section>
 
-    <aside class="notice" aria-label="Map accuracy notice">
+    <aside class="notice" :aria-label="t('map.noticeLabel')">
       <span aria-hidden="true">i</span>
       <span>
-        <strong>Schematic visitor guide</strong>
-        Locations are illustrative, not a surveyed floor plan. Please follow current museum signs
-        or ask staff for precise directions.
+        <strong>{{ t('map.noticeTitle') }}</strong>
+        {{ t('map.noticeBody') }}
       </span>
     </aside>
   </main>
 </template>
 
 <script>
+import { t } from '../i18n.js'
+
 export default {
   name: 'MuseumMapView',
   data() {
@@ -343,6 +347,7 @@ export default {
     },
   },
   methods: {
+    t,
     selectLevel(level) {
       this.selectedLevelId = level.id
       const firstRoom = level.rooms[0]

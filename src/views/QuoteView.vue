@@ -1,25 +1,26 @@
 <template>
   <main class="quote-page">
-    <h1>Quote Generator</h1>
+    <h1>{{ t('quote.title') }}</h1>
     <blockquote>{{ quotes[currentQuoteIndex] }}</blockquote>
-    <button type="button" @click="pickRandomQuote">Show another quote</button>
+    <button type="button" @click="pickRandomQuote">{{ t('quote.next') }}</button>
   </main>
 </template>
 
 <script>
+import { t } from '../i18n.js'
+
 export default {
   name: 'QuoteView',
   data() {
-    return {
-      quotes: [
-        'Small steps still move you forward.',
-        'Curiosity turns the unknown into a path.',
-        'Make room for the work that matters.',
-      ],
-      currentQuoteIndex: 0,
-    }
+    return { currentQuoteIndex: 0 }
+  },
+  computed: {
+    quotes() {
+      return t('quote.quotes')
+    },
   },
   methods: {
+    t,
     pickRandomQuote() {
       if (this.quotes.length < 2) return
 

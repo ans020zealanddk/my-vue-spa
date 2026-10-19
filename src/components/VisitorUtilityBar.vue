@@ -1,15 +1,15 @@
 <template>
-  <aside class="utility-bar" aria-label="Visitor information and shortcuts">
+  <aside class="utility-bar" :aria-label="t('utility.ariaLabel')">
     <div class="utility-inner">
-      <span class="utility-heading">Visitor essentials</span>
-      <nav class="utility-actions" aria-label="Visitor essentials">
+      <span class="utility-heading">{{ t('utility.heading') }}</span>
+      <nav class="utility-actions" :aria-label="t('utility.heading')">
         <a
           class="utility-link"
           href="https://www.smk.dk/en/section/visit-smk/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Opening hours
+          {{ t('utility.openingHours') }}
         </a>
         <a
           class="utility-link"
@@ -17,7 +17,7 @@
           target="_blank"
           rel="noopener noreferrer"
         >
-          Audio guides
+          {{ t('utility.audioGuides') }}
         </a>
         <RouterLink
           v-for="facility in facilities"
@@ -25,7 +25,7 @@
           class="utility-link"
           :to="{ name: 'map', query: { place: facility.id } }"
         >
-          {{ facility.label }}
+          {{ t(`places.${facility.id}.name`) }}
         </RouterLink>
       </nav>
     </div>
@@ -33,16 +33,21 @@
 </template>
 
 <script>
+import { t } from '../i18n.js'
+
 export default {
   name: 'VisitorUtilityBar',
   data() {
     return {
       facilities: [
-        { id: 'lockers', label: 'Lockers' },
-        { id: 'cafe', label: 'Café' },
-        { id: 'restrooms', label: 'Restrooms' },
+        { id: 'lockers' },
+        { id: 'cafe' },
+        { id: 'restrooms' },
       ],
     }
+  },
+  methods: {
+    t,
   },
 }
 </script>

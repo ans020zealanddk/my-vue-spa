@@ -1,24 +1,21 @@
 <template>
   <main class="page-content">
-    <section aria-labelledby="find-title">
-      <p class="eyebrow">Artwork & room wayfinder</p>
-      <h1 id="find-title" class="page-title">Follow your curiosity.</h1>
-      <p class="page-intro">
-        Search a collection highlight or gallery area to see a suggested route from the main
-        entrance.
-      </p>
+    <section :aria-labelledby="t('wayfinder.titleId')">
+      <p class="eyebrow">{{ t('wayfinder.eyebrow') }}</p>
+      <h1 :id="t('wayfinder.titleId')" class="page-title">{{ t('wayfinder.title') }}</h1>
+      <p class="page-intro">{{ t('wayfinder.intro') }}</p>
     </section>
 
-    <section class="wayfinder-layout" aria-label="Artwork and room wayfinder">
+    <section class="wayfinder-layout" :aria-label="t('wayfinder.ariaLabel')">
       <div class="wayfinder-panel">
-        <h2>Where would you like to go?</h2>
-        <label class="search-label" for="destination-search">Search artworks and rooms</label>
+        <h2>{{ t('wayfinder.panelTitle') }}</h2>
+        <label class="search-label" for="destination-search">{{ t('wayfinder.searchLabel') }}</label>
         <input
           id="destination-search"
           v-model="searchQuery"
           class="search-input"
           type="search"
-          placeholder="Try “Golden Age” or “modern art”"
+          :placeholder="t('wayfinder.searchPlaceholder')"
           autocomplete="off"
         />
 
@@ -32,47 +29,51 @@
             :aria-pressed="selectedDestinationId === destination.id"
             @click="selectDestination(destination)"
           >
-            <span class="destination-name">{{ destination.name }}</span>
+            <span class="destination-name">{{ t(`destinations.${destination.id}.name`) }}</span>
             <span class="destination-row">
-              <span class="destination-type">{{ destination.kind }}</span>
-              <span class="destination-type">{{ destination.zone }}</span>
+              <span class="destination-type">{{ t(`destinations.${destination.id}.kind`) }}</span>
+              <span class="destination-type">{{ t(`destinations.${destination.id}.zone`) }}</span>
             </span>
           </button>
         </div>
         <p v-else class="muted-copy" role="status">
-          No matching destinations. Try another artwork or collection name.
+          {{ t('wayfinder.noResults') }}
         </p>
       </div>
 
       <article v-if="selectedDestination" class="destination-list" aria-live="polite">
-        <p class="eyebrow">{{ selectedDestination.kind }}</p>
-        <h2>{{ selectedDestination.name }}</h2>
-        <p class="muted-copy">{{ selectedDestination.zone }}</p>
-        <p class="route-origin">Starting point · Main entrance</p>
-        <ol class="direction-list" aria-label="Suggested directions">
-          <li v-for="(step, index) in selectedDestination.directions" :key="index">
+        <p class="eyebrow">{{ t(`destinations.${selectedDestination.id}.kind`) }}</p>
+        <h2>{{ t(`destinations.${selectedDestination.id}.name`) }}</h2>
+        <p class="muted-copy">{{ t(`destinations.${selectedDestination.id}.zone`) }}</p>
+        <p class="route-origin">{{ t('wayfinder.routeOrigin') }}</p>
+        <ol class="direction-list" :aria-label="t('wayfinder.directionsLabel')">
+          <li
+            v-for="(step, index) in t(`destinations.${selectedDestination.id}.directions`)"
+            :key="index"
+          >
             {{ step }}
           </li>
         </ol>
-        <aside class="notice" aria-label="Direction accuracy notice">
+        <aside class="notice" :aria-label="t('wayfinder.noticeLabel')">
           <span aria-hidden="true">i</span>
           <span>
-            <strong>Suggested prototype route</strong>
-            Directions are illustrative and may not match the current gallery layout. Follow museum
-            signage or ask staff for the precise route.
+            <strong>{{ t('wayfinder.noticeTitle') }}</strong>
+            {{ t('wayfinder.noticeBody') }}
           </span>
         </aside>
       </article>
       <article v-else class="destination-list">
-        <p class="eyebrow">Your route</p>
-        <h2>Select a destination</h2>
-        <p class="muted-copy">Choose a result to see its suggested directions from the entrance.</p>
+        <p class="eyebrow">{{ t('wayfinder.emptyEyebrow') }}</p>
+        <h2>{{ t('wayfinder.emptyTitle') }}</h2>
+        <p class="muted-copy">{{ t('wayfinder.emptyBody') }}</p>
       </article>
     </section>
   </main>
 </template>
 
 <script>
+import { t } from '../i18n.js'
+
 export default {
   name: 'WayfinderView',
   data() {
@@ -155,7 +156,7 @@ export default {
       if (!query) return this.destinations
 
       return this.destinations.filter((destination) =>
-        `${destination.name} ${destination.kind} ${destination.zone}`
+        `${destination.name} ${destination.kind} ${destination.zone} ${this.t(`destinations.${destination.id}.name`)} ${this.t(`destinations.${destination.id}.kind`)} ${this.t(`destinations.${destination.id}.zone`)}`
           .toLocaleLowerCase()
           .includes(query),
       )
@@ -167,6 +168,7 @@ export default {
     },
   },
   methods: {
+    t,
     selectDestination(destination) {
       this.selectedDestinationId = destination.id
     },

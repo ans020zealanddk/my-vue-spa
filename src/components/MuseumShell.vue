@@ -2,20 +2,36 @@
   <div class="museum-shell">
     <header class="site-header">
       <div class="header-topline">
-        <RouterLink class="brand-lockup" :to="{ name: 'map' }" aria-label="SMK Wayfinder home">
+        <RouterLink
+          class="brand-lockup"
+          :to="{ name: 'map' }"
+          :aria-label="t('shell.homeLabel')"
+        >
           <span class="brand-mark">SMK</span>
-          <span class="brand-name">National Gallery of Denmark</span>
+          <span class="brand-name">{{ t('shell.brandName') }}</span>
         </RouterLink>
-        <span class="header-note">A quieter way to find your way</span>
+        <div class="header-tools">
+          <span class="header-note">{{ t('shell.headerNote') }}</span>
+          <select
+            class="language-select"
+            :value="currentLocale"
+            :aria-label="t('shell.languageLabel')"
+            @change="changeLocale"
+          >
+            <option v-for="language in languages" :key="language.code" :value="language.code">
+              {{ language.label }}
+            </option>
+          </select>
+        </div>
       </div>
-      <nav class="primary-nav" aria-label="Main navigation">
-        <RouterLink :to="{ name: 'map' }">Explore the museum</RouterLink>
-        <RouterLink :to="{ name: 'find' }">Find an artwork</RouterLink>
+      <nav class="primary-nav" :aria-label="t('shell.navigationLabel')">
+        <RouterLink :to="{ name: 'map' }">{{ t('nav.explore') }}</RouterLink>
+        <RouterLink :to="{ name: 'find' }">{{ t('nav.find') }}</RouterLink>
       </nav>
     </header>
     <RouterView />
     <footer class="site-footer">
-      A visitor prototype · For precise directions, follow museum signage or ask our staff.
+      {{ t('shell.footer') }}
     </footer>
     <VisitorUtilityBar />
   </div>
@@ -23,11 +39,28 @@
 
 <script>
 import VisitorUtilityBar from './VisitorUtilityBar.vue'
+import { languages, locale, t } from '../i18n.js'
 
 export default {
   name: 'MuseumShell',
   components: {
     VisitorUtilityBar,
+  },
+  data() {
+    return {
+      languages,
+    }
+  },
+  computed: {
+    currentLocale() {
+      return locale.value
+    },
+  },
+  methods: {
+    t,
+    changeLocale(event) {
+      locale.value = event.target.value
+    },
   },
 }
 </script>
