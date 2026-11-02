@@ -55,33 +55,34 @@
               class="room-connector"
               :d="room.connector"
             />
-            <g
-              v-for="room in currentLevelRooms"
-              :key="room.place.id"
-              class="floor-room"
-              :class="{ 'is-selected': selectedPlaceId === room.place.id }"
-              role="button"
-              tabindex="0"
-              :aria-label="t('map.roomSelectLabel', { name: t(`places.${room.place.id}.name`), location: t(`places.${room.place.id}.location`) })"
-              :aria-pressed="selectedPlaceId === room.place.id"
-              @click="selectPlace(room.place)"
-              @keydown="activateRoom($event, room.place)"
-            >
-              <rect
-                class="room-shape"
-                :x="room.x"
-                :y="room.y"
-                :width="room.width"
-                :height="room.height"
-                rx="2"
-              />
-              <text class="room-map-label" :x="room.x + room.width / 2" :y="room.y + 42">
-                {{ t(`places.${room.place.id}.mapLabel`) }}
-              </text>
-              <text class="room-map-caption" :x="room.x + room.width / 2" :y="room.y + 66">
-                {{ t(`places.${room.place.id}.location`).split(' · ')[0] }}
-              </text>
-            </g>
+               
+              <g
+                v-for="room in currentLevelRooms"
+                :key="room.place.place_id"
+                class="floor-room"
+                :class="{ 'is-selected': selectedPlaceId === room.place.place_key }"
+                role="button"
+                tabindex="0"
+                :aria-label="`${room.place.name}, ${room.place.location}. Select for directions.`"
+                :aria-pressed="selectedPlaceId === room.place.place_key"
+                @click="selectPlace(room.place)"
+                @keydown="activateRoom($event, room.place)"
+              >
+                <rect
+                  class="room-shape"
+                  :x="room.x"
+                  :y="room.y"
+                  :width="room.width"
+                  :height="room.height"
+                  rx="2"
+                />
+                <text class="room-map-label" :x="room.x + room.width / 2" :y="room.y + 42">
+                  {{ room.place.map_label || room.place.name }}
+                </text>
+                <text class="room-map-caption" :x="room.x + room.width / 2" :y="room.y + 66">
+                  {{ room.place.location ? room.place.location.split(' · ')[0] : '' }}
+                </text>
+              </g>
             <text class="entrance-label" x="320" y="348">{{ t('map.mainEntrance') }}</text>
           </svg>
         </div>
@@ -96,24 +97,22 @@
 
       <article v-if="selectedPlace" class="detail-card" aria-live="polite">
         <div>
-          <p class="eyebrow">{{ t(`places.${selectedPlace.id}.category`) }}</p>
-          <h2>{{ t(`places.${selectedPlace.id}.name`) }}</h2>
-          <p class="muted-copy">{{ t(`places.${selectedPlace.id}.description`) }}</p>
+          <p class="eyebrow">{{ selectedPlace.categoryName }}</p>
+          <h2>{{ selectedPlace.name }}</h2>
+          <p class="muted-copy">{{ selectedPlace.description }}</p>
         </div>
-        <p class="detail-meta">{{ t(`places.${selectedPlace.id}.location`) }}</p>
+        <p class="detail-meta">{{ selectedPlace.location }}</p>
         <div class="room-directions">
           <h3>{{ t('map.directionsTitle') }}</h3>
           <ol class="direction-list">
-            <li
-              v-for="(step, index) in t(`places.${selectedPlace.id}.directions`)"
-              :key="index"
-            >
-              {{ step }}
+            <li v-for="step in selectedPlace.directionsList" :key="step.step_order">
+              {{ step.direction_text }}
             </li>
           </ol>
         </div>
-      </article>
-    </section>
+      </article>  
+
+   </section>
 
     <section aria-labelledby="facilities-title">
       <div class="section-heading">
@@ -121,18 +120,18 @@
         <span class="section-kicker">{{ t('map.facilitiesKicker') }}</span>
       </div>
       <div class="facility-grid">
-        <button
-          v-for="(facility, index) in facilities"
-          :key="facility.id"
-          class="facility-link"
-          :class="{ 'is-selected': selectedPlaceId === facility.id }"
-          type="button"
-          :aria-pressed="selectedPlaceId === facility.id"
-          @click="selectPlace(facility)"
-        >
-          <span class="facility-icon" aria-hidden="true">{{ index + 1 }}</span>
-          <span class="facility-name">{{ t(`places.${facility.id}.name`) }}</span>
-        </button>
+      <button
+        v-for="(facility, index) in facilityList"
+        :key="facility.id"
+        class="facility-link"
+        :class="{ 'is-selected': selectedPlaceId === facility.id }"
+        type="button"
+        :aria-pressed="selectedPlaceId === facility.id"
+        @click="selectPlace(facility)"
+      >
+        <span class="facility-icon" aria-hidden="true">{{ index + 1 }}</span>
+        <span class="facility-name">{{ facility.name }}</span>
+      </button>
       </div>
     </section>
 
@@ -148,91 +147,14 @@
 
 <script>
 import { t } from '../i18n.js'
+import placeService from '../services/placeService.js'
 
 export default {
   name: 'MuseumMapView',
   data() {
     return {
       selectedPlaceId: 'european-art',
-      zones: [
-        {
-          id: 'european-art',
-          category: 'Collection zone',
-          name: 'European Art 1300–1800',
-          location: 'Ground level · prototype room',
-          directions: [
-            'From the main entrance, continue into the ground-level gallery corridor.',
-            'Turn toward the European Art gallery on your left.',
-            'Enter the European Art 1300–1800 room.',
-          ],
-          description:
-            'Explore European paintings and sculpture from the late medieval period through the eighteenth century.',
-        },
-        {
-          id: 'danish-golden-age',
-          category: 'Collection zone',
-          name: 'Danish Golden Age',
-          location: 'First level · prototype room',
-          directions: [
-            'From the main entrance, follow the stairs to the first level.',
-            'Turn into the gallery corridor and continue toward Danish collections.',
-            'Enter the Danish Golden Age room.',
-          ],
-          description:
-            'Discover the artists and changing cultural life of Denmark in the early nineteenth century.',
-        },
-        {
-          id: 'modern-art',
-          category: 'Collection zone',
-          name: 'Modern Art',
-          location: 'Second level · prototype room',
-          directions: [
-            'From the main entrance, follow the stairs to the second level.',
-            'Turn into the gallery corridor toward the modern collections.',
-            'Enter the Modern Art room.',
-          ],
-          description:
-            'Move through modern and contemporary works from Denmark and around the world.',
-        },
-      ],
-      facilities: [
-        {
-          id: 'lockers',
-          category: 'Visitor facility',
-          name: 'Lockers',
-          location: 'Ground level · prototype room',
-          directions: [
-            'From the main entrance, continue into the ground-level corridor.',
-            'Turn toward visitor services on your right.',
-            'The locker area is in the visitor-services room.',
-          ],
-          description: 'Find the visitor-services area and check with staff for current locker access.',
-        },
-        {
-          id: 'cafe',
-          category: 'Visitor facility',
-          name: 'Café',
-          location: 'First level · prototype room',
-          directions: [
-            'From the main entrance, follow the stairs to the first level.',
-            'Turn toward the visitor café from the gallery corridor.',
-            'Enter the café area.',
-          ],
-          description: 'Take a pause at the museum café; ask staff for current service information.',
-        },
-        {
-          id: 'restrooms',
-          category: 'Visitor facility',
-          name: 'Restrooms',
-          location: 'Second level · prototype room',
-          directions: [
-            'From the main entrance, follow the stairs to the second level.',
-            'Continue along the corridor toward visitor facilities.',
-            'Enter the restroom area.',
-          ],
-          description: 'Use the museum signs to find the nearest restroom from your current gallery.',
-        },
-      ],
+      places: [], // Will be populated from MySQL via API
       selectedLevelId: 'ground',
       levels: [
         {
@@ -311,9 +233,18 @@ export default {
     }
   },
   computed: {
-    allPlaces() {
-      return [...this.zones, ...this.facilities]
-    },
+     allPlaces() {
+      // Map normalized 3NF database fields to component expectations
+      return this.places.map(p => ({
+        ...p,
+        id: p.place_key,
+        mapLabel: p.map_label || p.name,
+        // Safely map the normalized Category name
+        categoryName: p.Category ? p.Category.category_name : '',
+        // Ensure directions are sorted by step_order
+        directionsList: p.Directions ? p.Directions.sort((a, b) => a.step_order - b.step_order) : []
+      }))
+    },   
     currentLevel() {
       return this.levels.find((level) => level.id === this.selectedLevelId) ?? this.levels[0]
     },
@@ -321,15 +252,33 @@ export default {
       return this.currentLevel.rooms
         .map((room) => ({
           ...room,
+          //it looks for the place in allPlaces which is fetched from MySQL and tries to find a match by ID place_key
           place: this.allPlaces.find((place) => place.id === room.placeId),
         }))
-        .filter((room) => room.place)
+        .filter((room) => room.place) // if no match is found it filters it out so it will not render
     },
     selectedPlace() {
       return this.allPlaces.find(
         (place) => place.id === this.selectedPlaceId,
       )
     },
+    // Filter facilities dynamically based on category or key
+    facilityList() {
+      return this.allPlaces.filter(p => p.categoryName === 'Visitor facility' || ['lockers', 'cafe', 'restrooms'].includes(p.place_key))
+    }
+  },
+  async mounted() {
+    try {
+      const response = await placeService.getAll()
+      this.places = response.data
+      
+      // If URL has query param, sync it
+      if (this.$route.query.place) {
+        this.selectedPlaceId = this.$route.query.place
+      }
+    } catch (error) {
+      console.error('Failed to load places from API:', error)
+    }
   },
   watch: {
     '$route.query.place': {
@@ -343,7 +292,6 @@ export default {
           if (level) this.selectedLevelId = level.id
         }
       },
-      immediate: true,
     },
   },
   methods: {

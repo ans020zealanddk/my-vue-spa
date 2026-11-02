@@ -1,33 +1,43 @@
-module.exports = (sequelize, Sequelize) => {
-  const Place = sequelize.define("place", {
+const { DataTypes } = require('sequelize')
+
+module.exports = (sequelize) => {
+  return sequelize.define('Place', {
     place_id: {
-      type: Sequelize.INTEGER,
+      type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     place_key: {
-      type: Sequelize.STRING,
-      allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
     },
     name: {
-      type: Sequelize.STRING,
-      allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     map_label: {
-      type: Sequelize.STRING
-    },
-    category: {
-      type: Sequelize.STRING
-    },
-    location: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING,
     },
     description: {
-      type: Sequelize.TEXT
-    }
+      type: DataTypes.TEXT,
+    },
+    category_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'categories',
+        key: 'category_id',
+      },
+    },
+    floor_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'floors',
+        key: 'floor_id',
+      },
+    },
   }, {
-    timestamps: false // Keeps Sequelize from looking for createdAt/updatedAt
-  });
-
-  return Place;
-};
+    tableName: 'places',
+    timestamps: false,
+  })
+}

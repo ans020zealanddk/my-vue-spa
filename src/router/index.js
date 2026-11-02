@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MuseumShell from '../components/MuseumShell.vue'
 import MuseumMapView from '../views/MuseumMapView.vue'
-import QuoteView from '../views/QuoteView.vue'
 import WayfinderView from '../views/WayfinderView.vue'
+import QuoteView from '../views/QuoteView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -25,10 +25,15 @@ const router = createRouter({
           path: 'quote',
           name: 'quote',
           component: QuoteView,
-        },
-      ],
+        }
+      ]
     },
-  ],
+    {
+      path: '/admin-management',
+      name: 'AdminPlaces',
+      component: () => import('../views/AdminPlacesView.vue')
+    }
+  ]
 })
 
 export default router
