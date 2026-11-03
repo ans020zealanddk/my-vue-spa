@@ -63,7 +63,7 @@
                 :class="{ 'is-selected': selectedPlaceId === room.place.place_key }"
                 role="button"
                 tabindex="0"
-                :aria-label="`${room.place.name}, ${room.place.location}. Select for directions.`"
+                :aria-label="`${room.place.name}, ${room.place.floorName}. Select for directions.`"
                 :aria-pressed="selectedPlaceId === room.place.place_key"
                 @click="selectPlace(room.place)"
                 @keydown="activateRoom($event, room.place)"
@@ -80,7 +80,7 @@
                   {{ room.place.map_label || room.place.name }}
                 </text>
                 <text class="room-map-caption" :x="room.x + room.width / 2" :y="room.y + 66">
-                  {{ room.place.location ? room.place.location.split(' · ')[0] : '' }}
+                  {{ room.place.floorName ? room.place.floorName.split(' · ')[0] : '' }}
                 </text>
               </g>
             <text class="entrance-label" x="320" y="348">{{ t('map.mainEntrance') }}</text>
@@ -101,7 +101,7 @@
           <h2>{{ selectedPlace.name }}</h2>
           <p class="muted-copy">{{ selectedPlace.description }}</p>
         </div>
-        <p class="detail-meta">{{ selectedPlace.location }}</p>
+        <p class="detail-meta">{{ selectedPlace.floorName }}</p>
         <div class="room-directions">
           <h3>{{ t('map.directionsTitle') }}</h3>
           <ol class="direction-list">
@@ -241,6 +241,8 @@ export default {
         mapLabel: p.map_label || p.name,
         // Safely map the normalized Category name
         categoryName: p.Category ? p.Category.category_name : '',
+        // Safely map the normalized Floor name from the floors table
+        floorName: p.Floor ? p.Floor.floor_name : '',
         // Ensure directions are sorted by step_order
         directionsList: p.Directions ? p.Directions.sort((a, b) => a.step_order - b.step_order) : []
       }))
